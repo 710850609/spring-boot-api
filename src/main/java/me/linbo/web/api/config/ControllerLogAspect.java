@@ -10,8 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+
+import com.alibaba.fastjson.JSON;
+
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.Map;
 
 /**
  * 请求日志切面
@@ -32,19 +37,34 @@ public class ControllerLogAspect {
         Object[] args = pjp.getArgs();
         Signature signature = pjp.getSignature();
         Method method = ((MethodSignature) signature).getMethod();
+        
         try {
-            log.debug("\n\r" +
-                    "==================== HTTP请求\t{}\t{}\n\r" +
-                    "==================== 处理方法\t{}\n\r" +
-                    "==================== 请求参数\t{}", request.getMethod(), request.getRequestURI(), method, Arrays.toString(args));
+            if (log.isDebugEnabled()) {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                Class<?> clazz = pjp.getSignature().getDeclaringType();
+                String curTime = format.format(new Date());
+                StringBuffer logBuf = new StringBuffer();
+                Map<String, String[]> parameterMap = request.getParameterMap();
+
+                logBuf.append("\n\r--------------------------------- ").append(curTime).append(" --------------------------\n\r");
+                logBuf.append("Url         : ").append(request.getMethod()).append(" ").append(request.getRequestURI()).append("\n\r");
+                logBuf.append("UrlPara     : ").append(JSON.toJSON(parameterMap)).append("\n\r");
+                logBuf.append("Controller  : ").append(clazz.getName()).append(".(").append(clazz.getSimpleName()).append(".java:1)").append("\n\r");
+                logBuf.append("Method      : ").append(method.getName()).append("\n\r");
+                logBuf.append("Parameters  : ").append(JSON.toJSON(args)).append("\n\r");
+                logBuf.append("------------------------------------------------------------------------------------\n\r");
+                log.debug(logBuf.toString());
+            }
             Object proceed = pjp.proceed();
             return proceed;
         } catch (Throwable e) {
-            log.error("{} 出现异常", method, e);
+            log.error("{} 出现异常", method.getName(), e);
             throw e;
         } finally {
             long endTime = System.currentTimeMillis();
-            log.info("{} 耗时 {} ms", method, endTime - startTime);
+            if (log.isDebugEnabled()) {
+                log.debug("{} 耗时 {} ms", method.getName(), endTime - startTime);
+            }
         }
     }
 
