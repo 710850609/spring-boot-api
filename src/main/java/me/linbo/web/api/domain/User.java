@@ -3,7 +3,7 @@ package me.linbo.web.api.domain;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * user
@@ -27,7 +27,7 @@ public class User implements Serializable {
     /**
      * 出生日期
      */
-    private LocalDateTime birthday;
+    private Date birthday;
 
     /**
      * 省份
@@ -62,12 +62,12 @@ public class User implements Serializable {
     /**
      * 创建时间
      */
-    private LocalDateTime createTime;
+    private Date createTime;
 
     /**
      * 更新时间
      */
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     private static final long serialVersionUID = 1L;
 
