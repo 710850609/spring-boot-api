@@ -1,22 +1,20 @@
 package me.linbo.web.api.config;
 
-import lombok.extern.slf4j.Slf4j;
+import com.alibaba.fastjson.JSON;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-
-import com.alibaba.fastjson.JSON;
-
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Date;
 import java.text.SimpleDateFormat;
-import java.util.Map;
+import java.util.Date;
 
 /**
  * 请求日志切面
@@ -25,7 +23,6 @@ import java.util.Map;
  */
 @Aspect
 @Component
-@Slf4j
 public class ControllerLogAspect {
 
     @Autowired
@@ -37,15 +34,16 @@ public class ControllerLogAspect {
         Object[] args = pjp.getArgs();
         Signature signature = pjp.getSignature();
         Method method = ((MethodSignature) signature).getMethod();
-        
+        Class<?> clazz = pjp.getSignature().getDeclaringType();
+        Field f = clazz.getSuperclass().getDeclaredField("log");
+        f.setAccessible(true);
+        Logger logger = (Logger) f.get(pjp.getTarget());
+
         try {
-            if (log.isDebugEnabled()) {
+            if (logger.isDebugEnabled()) {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                Class<?> clazz = pjp.getSignature().getDeclaringType();
                 String curTime = format.format(new Date());
                 StringBuffer logBuf = new StringBuffer();
-                Map<String, String[]> parameterMap = request.getParameterMap();
-
 
                 logBuf.append("\n\r--------------------------------- ").append(curTime).append(" --------------------------\n\r");
                 logBuf.append("Url         : ").append(request.getMethod()).append(" ").append(request.getRequestURI()).append("\n\r");
@@ -54,17 +52,18 @@ public class ControllerLogAspect {
                 logBuf.append("Method      : ").append(method.getName()).append("\n\r");
                 logBuf.append("Parameters  : ").append(JSON.toJSON(args)).append("\n\r");
                 logBuf.append("------------------------------------------------------------------------------------\n\r");
-                log.debug(logBuf.toString());
+
+                logger.debug(logBuf.toString());
             }
             Object proceed = pjp.proceed();
             return proceed;
         } catch (Throwable e) {
-            log.error("{} 出现异常", method.getName(), e);
+            logger.error("{} 出现异常", method.getName(), e);
             throw e;
         } finally {
             long endTime = System.currentTimeMillis();
-            if (log.isDebugEnabled()) {
-                log.debug("{} 耗时 {} ms", method.getName(), endTime - startTime);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} 耗时 {} ms", method.getName(), endTime - startTime);
             }
         }
     }
