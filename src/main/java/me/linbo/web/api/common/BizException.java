@@ -1,10 +1,13 @@
 package me.linbo.web.api.common;
 
+import lombok.Getter;
+
 /**
  * @author LinBo
  * @date 2019-11-26 16:02
  */
-public abstract class BizException {
+@Getter
+public abstract class BizException extends RuntimeException {
 
     private String code;
 

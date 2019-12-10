@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <mybatis-plus.version>3.2.0</mybatis-plus.version>
+        <mybatis-plus.version>3.3.0</mybatis-plus.version>
         <smart-doc.version>1.7.7</smart-doc.version>
 
         <asciidoctor.input.directory>${project.basedir}/src/docs/asciidoc</asciidoctor.input.directory>
@@ -44,6 +44,13 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
         </dependency>
+        <!-- mybatis-plus sql打印 -->
+        <dependency>
+            <groupId>p6spy</groupId>
+            <artifactId>p6spy</artifactId>
+            <version>3.8.6</version>
+        </dependency>
+
 
         <dependency>
             <groupId>com.baomidou</groupId>

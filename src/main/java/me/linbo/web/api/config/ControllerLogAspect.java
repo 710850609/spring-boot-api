@@ -9,6 +9,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
@@ -25,10 +26,9 @@ import java.util.Date;
 @Component
 public class ControllerLogAspect {
 
-    @Autowired
-    private HttpServletRequest request;
-
-    @Around("execution(* me.linbo.web.api.controller.*.*(..))")
+//    @Around(value = "@annotation(controller)")
+//    public Object doLog(ProceedingJoinPoint pjp, RestController controller) throws Throwable {
+    @Around("execution(* me.linbo.web.api.controller.*.*(..)), execution(* me.linbo.web.api.common.BaseController.*(..))")
     public Object doLog(ProceedingJoinPoint pjp) throws Throwable {
         long startTime = System.currentTimeMillis();
         Object[] args = pjp.getArgs();
@@ -67,5 +67,8 @@ public class ControllerLogAspect {
             }
         }
     }
+
+    @Autowired
+    private HttpServletRequest request;
 
 }
