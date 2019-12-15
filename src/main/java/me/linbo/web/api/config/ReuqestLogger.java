@@ -1,6 +1,7 @@
 package me.linbo.web.api.config;
 
 import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -9,7 +10,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
@@ -24,11 +24,13 @@ import java.util.Date;
  */
 @Aspect
 @Component
-public class ControllerLogAspect {
+@Slf4j
+public class ReuqestLogger {
 
-//    @Around(value = "@annotation(controller)")
-//    public Object doLog(ProceedingJoinPoint pjp, RestController controller) throws Throwable {
-    @Around("execution(* me.linbo.web.api.controller.*.*(..)), execution(* me.linbo.web.api.common.BaseController.*(..))")
+    @Autowired
+    private HttpServletRequest request;
+
+    @Around("execution(* me.linbo.web.api.controller.*.*(..))")
     public Object doLog(ProceedingJoinPoint pjp) throws Throwable {
         long startTime = System.currentTimeMillis();
         Object[] args = pjp.getArgs();
@@ -36,9 +38,11 @@ public class ControllerLogAspect {
         Method method = ((MethodSignature) signature).getMethod();
         Class<?> clazz = pjp.getSignature().getDeclaringType();
         Field f = clazz.getSuperclass().getDeclaredField("log");
-        f.setAccessible(true);
-        Logger logger = (Logger) f.get(pjp.getTarget());
-
+        Logger logger = log;
+        if (f != null) {
+            f.setAccessible(true);
+            logger = (Logger) f.get(pjp.getTarget());
+        }
         try {
             if (logger.isDebugEnabled()) {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -67,8 +71,5 @@ public class ControllerLogAspect {
             }
         }
     }
-
-    @Autowired
-    private HttpServletRequest request;
 
 }

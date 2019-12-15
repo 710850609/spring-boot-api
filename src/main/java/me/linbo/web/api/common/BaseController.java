@@ -3,6 +3,7 @@ package me.linbo.web.api.common;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import me.linbo.web.api.common.execption.BizException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,16 +111,6 @@ public abstract class BaseController<S extends BaseService, M, T extends Seriali
      */
     protected <T> Response <T> error(BizException e) {
         return Response.error(e);
-    }
-
-    /**
-     * 请求失败
-     * @param e 业务异常
-     * @param data 异常数据
-     * @return ignore
-     */
-    protected <T> Response<T> error(BizException e, T data) {
-        return Response.error(e, data);
     }
 
 }

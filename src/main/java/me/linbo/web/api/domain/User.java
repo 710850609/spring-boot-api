@@ -1,6 +1,8 @@
 package me.linbo.web.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -64,6 +66,7 @@ public class User implements Serializable {
     /**
      * 创建时间
      */
+    @JsonDeserialize(using = DateDeserializers.DateDeserializer.class)
     private Date createTime;
 
     /**
