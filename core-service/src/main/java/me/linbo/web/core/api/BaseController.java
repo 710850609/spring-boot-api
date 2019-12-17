@@ -1,9 +1,13 @@
-package me.linbo.web.api.common;
+package me.linbo.web.core.api;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import me.linbo.web.api.common.execption.BizException;
+import me.linbo.web.core.entity.PageQuery;
+import me.linbo.web.core.entity.PageResult;
+import me.linbo.web.core.entity.Response;
+import me.linbo.web.core.execption.BizException;
+import me.linbo.web.core.service.BaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
