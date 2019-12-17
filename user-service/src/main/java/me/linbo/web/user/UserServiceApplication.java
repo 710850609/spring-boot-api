@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author linbo
  */
 @MapperScan("me.linbo.web.user.mapper")
-@SpringBootApplication(scanBasePackages = {"me.linbo.web", "me.linbo.web"})
+@SpringBootApplication(scanBasePackages = "me.linbo.web")
 public class UserServiceApplication {
 
     public static void main(String[] args) {
