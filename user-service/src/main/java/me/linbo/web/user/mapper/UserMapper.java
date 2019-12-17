@@ -2,7 +2,7 @@ package me.linbo.web.user.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import me.linbo.web.user.domain.User;
+import me.linbo.web.user.entity.User;
 
 /**
  * @author LinBo

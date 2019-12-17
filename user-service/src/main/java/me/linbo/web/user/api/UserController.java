@@ -1,10 +1,9 @@
 package me.linbo.web.user.api;
 
-
 import me.linbo.web.core.api.BaseController;
 import me.linbo.web.core.entity.Response;
 import me.linbo.web.core.entity.UserInfo;
-import me.linbo.web.user.domain.User;
+import me.linbo.web.user.entity.User;
 import me.linbo.web.user.service.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -2,7 +2,7 @@ package me.linbo.web.user.service;
 
 
 import me.linbo.web.core.service.BaseService;
-import me.linbo.web.user.domain.User;
+import me.linbo.web.user.entity.User;
 
 /**
  * @author LinBo

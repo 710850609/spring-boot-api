@@ -1,7 +1,7 @@
 package me.linbo.web.user.service.impl;
 
 import me.linbo.web.core.service.BaseServiceImpl;
-import me.linbo.web.user.domain.User;
+import me.linbo.web.user.entity.User;
 import me.linbo.web.user.mapper.UserMapper;
 import me.linbo.web.user.service.UserService;
 import org.springframework.stereotype.Service;
