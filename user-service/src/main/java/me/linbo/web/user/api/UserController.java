@@ -1,14 +1,16 @@
-package me.linbo.web.user.rest;
+package me.linbo.web.user.api;
 
 
 import me.linbo.web.core.api.BaseController;
+import me.linbo.web.core.entity.Response;
+import me.linbo.web.core.entity.UserInfo;
 import me.linbo.web.user.domain.User;
 import me.linbo.web.user.service.UserService;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.awt.*;
 
 /**
  * @author LinBo
@@ -17,5 +19,10 @@ import java.awt.*;
 @RestController
 @RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController extends BaseController<UserService, User, Long> {
+
+    @GetMapping("/test")
+    public Response<UserInfo> test(UserInfo userInfo) {
+        return ok(userInfo);
+    }
 
 }

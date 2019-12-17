@@ -127,15 +127,16 @@ public class ReuqestLogger {
     private Logger getClassLogger(Class<?> clazz, ProceedingJoinPoint pjp) {
         Logger logger = log;
         try {
-            Field f = clazz.getSuperclass().getDeclaredField("log");
-            f.setAccessible(true);
-            logger = (Logger) f.get(pjp.getTarget());
-        } catch (Exception e) {}
-        try {
             Field f = clazz.getDeclaredField("log");
             f.setAccessible(true);
             logger = (Logger) f.get(pjp.getTarget());
-        } catch (Exception e) {}
+        } catch (Exception e1) {
+            try {
+                Field f = clazz.getSuperclass().getDeclaredField("log");
+                f.setAccessible(true);
+                logger = (Logger) f.get(pjp.getTarget());
+            } catch (Exception e2) {}
+        }
         return logger;
     }
 

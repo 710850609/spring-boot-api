@@ -30,7 +30,7 @@ public class ErrorJsonController implements ErrorController {
     }
 
     @RequestMapping
-    public Response<String> error(HttpServletRequest request) {
+    public Response<String> error(HttpServletRequest request, Throwable t) {
         HttpStatus status = getStatus(request);
         switch (status) {
             case NOT_FOUND:

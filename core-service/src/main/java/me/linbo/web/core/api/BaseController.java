@@ -3,14 +3,17 @@ package me.linbo.web.core.api;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import me.linbo.web.core.entity.PageQuery;
 import me.linbo.web.core.entity.PageResult;
 import me.linbo.web.core.entity.Response;
+import me.linbo.web.core.entity.UserInfo;
 import me.linbo.web.core.execption.BizException;
 import me.linbo.web.core.service.BaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
@@ -20,9 +23,8 @@ import java.io.Serializable;
  * @author LinBo
  * @date 2019-11-26 15:56
  */
+@Slf4j
 public abstract class BaseController<S extends BaseService, M, T extends Serializable> {
-
-    protected Logger log = LoggerFactory.getLogger(BaseController.class);
 
     @Autowired
     protected BaseService<M> baseService;

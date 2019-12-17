@@ -1,4 +1,4 @@
-package me.linbo.web.user.domain;
+package me.linbo.web.user.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
