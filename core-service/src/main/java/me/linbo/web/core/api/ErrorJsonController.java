@@ -1,11 +1,14 @@
 package me.linbo.web.core.api;
 
+import lombok.extern.slf4j.Slf4j;
 import me.linbo.web.core.entity.Response;
+import me.linbo.web.core.execption.SystemException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,9 +16,10 @@ import javax.servlet.http.HttpServletRequest;
  * @author LinBo
  * @date 2019-12-15 22:22
  */
+@Slf4j
 @RestController
 @RequestMapping("${server.error.path:${error.path:/error}}")
-public class ErrorHandler implements ErrorController {
+public class ErrorJsonController implements ErrorController {
 
     @Value("${server.error.path:${error.path:/error}}")
     private String errorPath;
@@ -30,9 +34,10 @@ public class ErrorHandler implements ErrorController {
         HttpStatus status = getStatus(request);
         switch (status) {
             case NOT_FOUND:
-                return Response.error(new RuntimeException());
+                return Response.error(SystemException.SERVICE_NOT_FOUND);
+            default:
+                return Response.error(SystemException.SYSTEM_ERROR);
         }
-        return Response.error(new RuntimeException());
     }
 
     protected HttpStatus getStatus(HttpServletRequest request) {

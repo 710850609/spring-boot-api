@@ -3,6 +3,7 @@ package me.linbo.web.core.entity;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import me.linbo.web.core.execption.BizException;
+import me.linbo.web.core.execption.SystemException;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
@@ -19,16 +20,14 @@ public class Response<T> implements Serializable {
 
     public static final String SUCCESS_CODE = "0";
 
-    public static final String SYSTEM_ERROR_CODE = "-1";
-
     /** 业务错误码 */
     private String code;
 
-    /** 结果集 */
-    private T data;
-
     /** 描述 */
     private String message;
+
+    /** 结果集 */
+    private T data;
 
     /**
      * 业务正常数据返回
@@ -56,7 +55,7 @@ public class Response<T> implements Serializable {
      **/
     public static <T> Response<T> error(Exception e) {
         Assert.notNull(e, "业务异常为空");
-        return build(SYSTEM_ERROR_CODE, e.getMessage(), null);
+        return build(SystemException.SYSTEM_ERROR.getCode(), e.getMessage(), null);
     }
 
     public static <T> Response<T> build(String code, String message, T data) {

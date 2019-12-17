@@ -2,6 +2,8 @@ package me.linbo.web.core.execption;
 
 
 /**
+ * 编码：
+ *  子系统：000
  * @author LinBo
  * @date 2019-12-15 19:40
  */
@@ -12,6 +14,9 @@ public class SystemException extends BizException {
     }
 
     /** 系统错误 */
-    public static final SystemException SYSTEM_EXCEPTION = new SystemException("-1", "系统错误");
+    public static final SystemException SYSTEM_ERROR = new SystemException("0000000000", "系统错误.{0}");
+    /** 服务不存在 */
+    public static final SystemException SERVICE_NOT_FOUND = new SystemException("0000000001", "服务不存在");
+
 
 }

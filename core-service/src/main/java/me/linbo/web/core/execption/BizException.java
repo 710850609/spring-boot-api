@@ -36,8 +36,8 @@ public class BizException extends RuntimeException {
     }
 
     /** 参数为空 */
-    public static final BizException COMMON_PARAMS_NOT_NULL = new BizException("1", "参数为空: {0}");
+    public static final BizException COMMON_PARAMS_NOT_NULL = new BizException("0000010001", "参数为空: {0}");
     /** 参数非法 */
-    public static final BizException COMMON_PARAMS_ILLEGAL = new BizException("1", "参数非法: {0}");
+    public static final BizException COMMON_PARAMS_ILLEGAL = new BizException("0000010002", "参数非法: {0}");
 
 }

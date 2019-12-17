@@ -32,5 +32,4 @@ logging:
   level:
     me:
       linbo:
-        web:
-          api: debug
+        web: debug
