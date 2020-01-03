@@ -1,4 +1,4 @@
-package me.linbo.web.core.api;
+package me.linbo.web.core.service;
 
 import lombok.extern.slf4j.Slf4j;
 import me.linbo.web.core.entity.Response;
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 @RestController
 @RequestMapping("${server.error.path:${error.path:/error}}")
-public class ErrorJsonController implements ErrorController {
+public class ErrorService implements ErrorController {
 
     @Value("${server.error.path:${error.path:/error}}")
     private String errorPath;

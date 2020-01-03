@@ -1,7 +1,8 @@
-package me.linbo.web.core.api;
+package me.linbo.web.core.logger;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import me.linbo.web.core.service.ErrorService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -9,7 +10,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +29,7 @@ import java.util.Date;
 public class ReuqestLogger {
 
     @Autowired
-    private ErrorJsonController errorJsonController;
+    private ErrorService errorService;
 
     @Autowired
     private HttpServletRequest request;
@@ -114,7 +114,7 @@ public class ReuqestLogger {
      * @return {@link boolean}
      **/
     private boolean isErrorController(HttpServletRequest request) {
-        String errorPath = errorJsonController.getErrorPath();
+        String errorPath = errorService.getErrorPath();
         return errorPath.equals(request.getRequestURI());
     }
 

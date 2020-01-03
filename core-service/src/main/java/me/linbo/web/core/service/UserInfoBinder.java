@@ -1,4 +1,4 @@
-package me.linbo.web.core.api;
+package me.linbo.web.core.service;
 
 import me.linbo.web.core.entity.UserInfo;
 
@@ -15,7 +15,6 @@ public class UserInfoBinder extends PropertyEditorSupport {
         if (value instanceof UserInfo) {
             super.setValue(value);
         } else {
-
             super.setValue(value);
         }
     }

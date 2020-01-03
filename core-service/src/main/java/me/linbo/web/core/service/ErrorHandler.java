@@ -1,4 +1,4 @@
-package me.linbo.web.core.api;
+package me.linbo.web.core.service;
 
 
 import lombok.extern.slf4j.Slf4j;

@@ -14,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @Accessors(chain = true)
-public class Response<T> implements Serializable {
+public class Response<M> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,23 +27,23 @@ public class Response<T> implements Serializable {
     private String message;
 
     /** 结果集 */
-    private T data;
+    private M data;
 
     /**
      * 业务正常数据返回
      * @param data
-     * @return {@link Response<T>}
+     * @return {@link Response<M>}
      **/
-    public static <T> Response<T> ok(T data) {
+    public static <M> Response<M> ok(M data) {
         return build(SUCCESS_CODE, "请求成功", data);
     }
 
     /**
      * 业务异常数据返回
      * @param e
-     * @return {@link Response<T>}
+     * @return {@link Response}
      **/
-    public static <T> Response<T> error(BizException e) {
+    public static Response error(BizException e) {
         Assert.notNull(e, "业务异常为空");
         return build(e.getCode(), e.getMessage(), null);
     }
@@ -51,14 +51,14 @@ public class Response<T> implements Serializable {
     /**
      * 其他异常数据返回
      * @param e
-     * @return {@link Response<T>}
+     * @return {@link Response}
      **/
-    public static <T> Response<T> error(Exception e) {
+    public static Response error(Exception e) {
         Assert.notNull(e, "业务异常为空");
         return build(SystemException.SYSTEM_ERROR.getCode(), e.getMessage(), null);
     }
 
-    public static <T> Response<T> build(String code, String message, T data) {
+    public static <M> Response<M> build(String code, String message, M data) {
         Response response = new Response();
         response.setCode(code);
         response.setMessage(message);
