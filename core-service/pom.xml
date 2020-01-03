@@ -10,6 +10,6 @@
     </parent>
     <artifactId>core-service</artifactId>
     <name>core-service</name>
-    <description>基础依赖服务</description>
+    <description>核心服务</description>
 
 </project>
