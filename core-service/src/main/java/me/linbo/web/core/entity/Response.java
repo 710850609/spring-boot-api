@@ -39,6 +39,14 @@ public class Response<M> implements Serializable {
     }
 
     /**
+     * 业务正常无数据返回
+     * @return {@link Response<>}
+     **/
+    public static Response ok() {
+        return build(SUCCESS_CODE, "请求成功", null);
+    }
+
+    /**
      * 业务异常数据返回
      * @param e
      * @return {@link Response}

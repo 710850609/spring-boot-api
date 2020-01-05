@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * 请求日志切面
@@ -87,7 +88,7 @@ public class ReuqestLogger {
 
                 logBuf.append("\n\r--------------------------------- ").append(curTime).append(" --------------------------\n\r");
                 logBuf.append("Url         : ").append(request.getMethod()).append(" ").append(request.getRequestURI()).append("\n\r");
-                logBuf.append("UrlPara     : ").append(request.getQueryString()).append("\n\r");
+                logBuf.append("UrlPara     : ").append(Optional.ofNullable(request.getQueryString()).orElse("")).append("\n\r");
                 logBuf.append("Controller  : ").append(clazz.getName()).append(".(").append(clazz.getSimpleName()).append(".java:1)").append("\n\r");
                 logBuf.append("Method      : ").append(method.getName()).append("\n\r");
                 logBuf.append("Parameters  : ").append(JSON.toJSONString(args)).append("\n\r");
