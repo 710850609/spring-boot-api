@@ -13,6 +13,8 @@ import java.util.Date;
 @Data
 public class User implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @TableId
     private Long id;
 
@@ -77,7 +79,5 @@ public class User implements Serializable {
      * 更新时间
      */
     private Date updateTime;
-
-    private static final long serialVersionUID = 1L;
 
 }

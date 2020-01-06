@@ -14,7 +14,11 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 public class UserQueryParams extends PageParams {
 
+
     private Long id;
+
+    /** 登录名 */
+    private String loginName;
 
     /**
      * 昵称
@@ -51,6 +55,9 @@ public class UserQueryParams extends PageParams {
      */
     private String photo;
 
+    /** 密码 */
+    private String password;
+
     /**
      * 加盐值
      */
@@ -61,8 +68,15 @@ public class UserQueryParams extends PageParams {
      */
     private String email;
 
+    /**
+     * 创建时间
+     */
+//    @JsonDeserialize(using = DateDeserializers.DateDeserializer.class)
     private Date createTime;
 
+    /**
+     * 更新时间
+     */
     private Date updateTime;
 
 }

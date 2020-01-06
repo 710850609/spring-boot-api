@@ -35,6 +35,8 @@ public class ErrorService implements ErrorController {
         switch (status) {
             case NOT_FOUND:
                 return Response.error(SystemException.SERVICE_NOT_FOUND);
+            case FORBIDDEN:
+                return Response.error(SystemException.FORBIDDEN);
             default:
                 return Response.error(SystemException.SYSTEM_ERROR);
         }
