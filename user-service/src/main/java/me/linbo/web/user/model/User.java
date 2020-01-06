@@ -16,6 +16,9 @@ public class User implements Serializable {
     @TableId
     private Long id;
 
+    /** 登录名 */
+    private String loginName;
+
     /**
      * 昵称
      */
@@ -50,6 +53,9 @@ public class User implements Serializable {
      * 头像
      */
     private String photo;
+
+    /** 密码 */
+    private String password;
 
     /**
      * 加盐值

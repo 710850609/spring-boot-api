@@ -3,6 +3,7 @@
 <mapper namespace="me.linbo.web.api.mapper.UserMapper">
   <resultMap id="BaseResultMap" type="me.linbo.web.user.model.User">
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
     <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
     <result column="sex" jdbcType="INTEGER" property="sex" />
     <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
@@ -11,6 +12,7 @@
     <result column="phone_no" jdbcType="INTEGER" property="phoneNo" />
     <result column="photo" jdbcType="VARCHAR" property="photo" />
     <result column="salt" jdbcType="VARCHAR" property="salt" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
