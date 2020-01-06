@@ -15,9 +15,11 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * 请求日志切面
@@ -85,13 +87,21 @@ public class ReuqestLogger {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 String curTime = format.format(new Date());
                 StringBuffer logBuf = new StringBuffer();
+                Parameter[] parameters = method.getParameters();
 
                 logBuf.append("\n\r--------------------------------- ").append(curTime).append(" --------------------------\n\r");
                 logBuf.append("Url         : ").append(request.getMethod()).append(" ").append(request.getRequestURI()).append("\n\r");
                 logBuf.append("UrlPara     : ").append(Optional.ofNullable(request.getQueryString()).orElse("")).append("\n\r");
                 logBuf.append("Controller  : ").append(clazz.getName()).append(".(").append(clazz.getSimpleName()).append(".java:1)").append("\n\r");
                 logBuf.append("Method      : ").append(method.getName()).append("\n\r");
-                logBuf.append("Parameters  : ").append(JSON.toJSONString(args)).append("\n\r");
+                logBuf.append("Parameters  : ");
+                for (int i = 0; i < parameters.length; i++) {
+                    logBuf.append(parameters[i].getName()).append("=").append(JSON.toJSONString(args[i]));
+                    if (i < parameters.length - 1) {
+                        logBuf.append(", ");
+                    }
+                }
+                logBuf.append("\n\r");
                 logBuf.append("------------------------------------------------------------------------------------\n\r");
 
                 logger.debug(logBuf.toString());
@@ -104,7 +114,7 @@ public class ReuqestLogger {
         } finally {
             long endTime = System.currentTimeMillis();
             if (logger.isDebugEnabled()) {
-                logger.debug("{} 耗时 {} ms", method.getName(), endTime - startTime);
+                logger.debug("调用 {}.{} 耗时 {} ms", clazz.getName(), method.getName(), endTime - startTime);
             }
         }
     }
