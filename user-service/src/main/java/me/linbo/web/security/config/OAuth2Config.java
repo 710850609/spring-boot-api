@@ -2,22 +2,29 @@ package me.linbo.web.security.config;
 
 import me.linbo.web.security.bll.UserDetailBiz;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.oauth2.config.annotation.builders.InMemoryClientDetailsServiceBuilder;
+import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
 /**
+ * 认证配置
  * @author LinBo
  * @date 2020/1/6 22:08
  */
-@Configuration
-@EnableAuthorizationServer
+//@Configuration
+//@EnableAuthorizationServer
 public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
+
+    @Autowired
+    private OAuth2ClientProperties oAuth2ClientProperties;
 
     /**
      * 注入权限验证控制器 来支持 password grant type
@@ -31,19 +38,20 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     @Autowired
     private TokenStore tokenStore;
 
-    @Autowired
-    private WebResponseExceptionTranslator webResponseExceptionTranslator;
-
     /**
      * 注入userDetailsService，开启refresh_token需要用到
      */
     @Autowired
     private UserDetailBiz userDetailsService;
 
-
     @Override
-    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        super.configure(security);
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        InMemoryClientDetailsServiceBuilder inMemoryClientDetailsServiceBuilder = clients.inMemory();
+        oAuth2ClientProperties.getRegistration()
+                .forEach((cId, action) -> {
+                    inMemoryClientDetailsServiceBuilder.withClient(cId)
+                            .secret(action.getClientSecret());
+                });
     }
 
     @Override
@@ -52,10 +60,12 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
         endpoints.authenticationManager(authenticationManager);
         //配置token存储方式
         endpoints.tokenStore(tokenStore);
-        //自定义登录或者鉴权失败时的返回信息
-        endpoints.exceptionTranslator(webResponseExceptionTranslator);
         //要使用refresh_token的话，需要额外配置userDetailsService
         endpoints.userDetailsService(userDetailsService);
+    }
 
+    @Bean
+    public TokenStore tokenStore() {
+        return new InMemoryTokenStore();
     }
 }

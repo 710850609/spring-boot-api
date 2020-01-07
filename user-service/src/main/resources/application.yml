@@ -13,6 +13,32 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/api?Unicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
     password: 123456
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: your-app-client-id
+            client-secret: your-app-client-secret
+          web-app:
+            client-id: web-app
+            client-secret: 123
+            authorization-grant-type: pass
+          web-api:
+            client-id: web-api
+            client-secret: abc
+            authorization-grant-type: pass
+        provider:
+          web-app:
+            authorization-uri: https://your-subdomain.oktapreview.com/oauth2/v1/authorize
+            token-uri: https://your-subdomain.oktapreview.com/oauth2/v1/token
+            user-info-uri: https://your-subdomain.oktapreview.com/oauth2/v1/userinfo
+            jwk-set-uri: https://your-subdomain.oktapreview.com/oauth2/v1/keys
+          web-api:
+            authorization-uri: https://your-subdomain.oktapreview.com/oauth2/v1/authorize
+            token-uri: https://your-subdomain.oktapreview.com/oauth2/v1/token
+            user-info-uri: https://your-subdomain.oktapreview.com/oauth2/v1/userinfo
+            jwk-set-uri: https://your-subdomain.oktapreview.com/oauth2/v1/keys
 
   jackson:
     serialization:

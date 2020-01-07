@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -20,9 +21,15 @@ public class UserDetailBiz implements UserDetailsService {
     @Autowired
     private UserBiz userBiz;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-//        User user = userBiz.getByName(name);
-        return new User(name, "{bcrypt}$2a$10$UaASZX590cBjyXzmHZnIUe76YyJNfswjpQmzstmgV0QpZXJ6a4QV2", Collections.emptyList());
+        String encode = passwordEncoder.encode("123");
+        return User.withUsername(name)
+                .password("{bcrypt}$2a$10$UaASZX590cBjyXzmHZnIUe76YyJNfswjpQmzstmgV0QpZXJ6a4QV2")
+                .roles(Collections.emptyList().toArray(new String[]{}))
+                .build();
     }
 }
