@@ -59,3 +59,6 @@ logging:
     me:
       linbo:
         web: debug
+    org:
+      springframework:
+        security: debug

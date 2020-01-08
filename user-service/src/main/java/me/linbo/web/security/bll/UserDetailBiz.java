@@ -9,9 +9,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
+ * 查询用户信息、角色、权限
  * @author LinBo
  * @date 2020-01-06 16:02
  */
@@ -29,7 +31,7 @@ public class UserDetailBiz implements UserDetailsService {
         String encode = passwordEncoder.encode("123");
         return User.withUsername(name)
                 .password("{bcrypt}$2a$10$UaASZX590cBjyXzmHZnIUe76YyJNfswjpQmzstmgV0QpZXJ6a4QV2")
-                .roles(Collections.emptyList().toArray(new String[]{}))
+                .roles(new String[]{"admin"})
                 .build();
     }
 }

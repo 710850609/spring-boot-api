@@ -61,7 +61,7 @@ public class Response<M> implements Serializable {
      * @param e
      * @return {@link Response}
      **/
-    public static Response error(Exception e) {
+    public static Response error(Throwable e) {
         Assert.notNull(e, "业务异常为空");
         return build(SystemException.SYSTEM_ERROR.getCode(), e.getMessage(), null);
     }

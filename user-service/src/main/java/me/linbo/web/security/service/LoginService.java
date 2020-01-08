@@ -28,6 +28,4 @@ public class LoginService {
         return Response.ok(loginResult);
     }
 
-
-
 }

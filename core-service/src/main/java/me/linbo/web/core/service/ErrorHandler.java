@@ -63,8 +63,8 @@ public class ErrorHandler {
         return Response.error(bizException);
     }
 
-    @ExceptionHandler({Exception.class})
-    public Response<String> unknownExceptionHandler(Exception e) {
+    @ExceptionHandler({Throwable.class})
+    public Response<String> unknownExceptionHandler(Throwable e) {
         return Response.error(e);
     }
 
