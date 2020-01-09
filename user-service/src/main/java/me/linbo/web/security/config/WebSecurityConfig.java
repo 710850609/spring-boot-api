@@ -1,6 +1,8 @@
 package me.linbo.web.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.linbo.web.security.bll.JwtAuthenticationFilter;
+import me.linbo.web.security.bll.JwtAuthorizationFilter;
 import me.linbo.web.security.bll.UserDetailBiz;
 import me.linbo.web.security.bll.WebSecurityInterceptor;
 import me.linbo.web.security.service.param.LoginParam;
@@ -20,6 +22,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
@@ -47,11 +50,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests().antMatchers("/css/***", "/js/***", "/fonts/***").permitAll()
-                .and().authorizeRequests().antMatchers("/login").permitAll()
+                .and().authorizeRequests().antMatchers("/login", "/error").permitAll()
                 .anyRequest().authenticated();
-        http.formLogin().loginProcessingUrl("/admin").usernameParameter("name").passwordParameter("password");
-        http.addFilterBefore(webSecurityInterceptor, FilterSecurityInterceptor.class);
-        http.addFilterAt(jsonLoginFilter(), UsernamePasswordAuthenticationFilter.class);
+//        http.formLogin().usernameParameter("name").passwordParameter("password");
+        http.addFilter(new JwtAuthenticationFilter(super.authenticationManager()));
+        http.addFilter(new JwtAuthorizationFilter(super.authenticationManager()));
     }
 
     @Override
@@ -81,40 +84,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    private UsernamePasswordAuthenticationFilter jsonLoginFilter() throws Exception {
-        UsernamePasswordAuthenticationFilter authenticationFilter = new UsernamePasswordAuthenticationFilter() {
-            @Override
-            protected String obtainPassword(HttpServletRequest request) {
-                return getLoginParam(request).getPassword();
-            }
-
-            @Override
-            protected String obtainUsername(HttpServletRequest request) {
-                return getLoginParam(request).getName();
-            }
-
-            protected LoginParam getLoginParam(HttpServletRequest request) {
-                MediaType contentType = getRequestContentType(request);
-                if (MediaType.APPLICATION_JSON.equals(contentType)
-                        || MediaType.APPLICATION_JSON_UTF8.equals(contentType)) {
-                    try {
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        return objectMapper.readValue(request.getInputStream(), LoginParam.class);
-                    } catch (Exception e) {}
-                }
-                LoginParam loginParam = new LoginParam();
-                loginParam.setName(super.obtainUsername(request));
-                loginParam.setPassword(super.obtainPassword(request));
-                return loginParam;
-            }
-
-            protected MediaType getRequestContentType(HttpServletRequest request) {
-                String contentType = request.getContentType();
-                return MediaType.parseMediaType(contentType);
-            }
-
-        };
-        authenticationFilter.setAuthenticationManager(authenticationManager());
-        return authenticationFilter;
-    }
 }
