@@ -1,6 +1,7 @@
 package me.linbo.web.security.bll;
 
 import me.linbo.web.core.util.AssertUtil;
+import me.linbo.web.security.service.param.MobileCodeLoginParam;
 import me.linbo.web.user.bll.UserBiz;
 import me.linbo.web.user.exception.UserException;
 import me.linbo.web.user.model.User;
@@ -18,11 +19,15 @@ public class LoginBiz {
     @Autowired
     private UserBiz userBiz;
 
-    public LoginResult login(String name, String password) {
+    public LoginResult namePasswordLogin(String name, String password) {
         // 认证
         User user = userBiz.getByNameAndPassword(name, password);
         AssertUtil.notNull(user, UserException.USER_NOT_EXISTS);
         // 授权
+        return null;
+    }
+
+    public LoginResult mobileCodeLogin(MobileCodeLoginParam param) {
         return null;
     }
 }

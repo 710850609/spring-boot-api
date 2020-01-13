@@ -27,7 +27,7 @@ public class UserDetailBiz implements UserDetailsService {
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
         String encode = passwordEncoder.encode("123");
         return User.withUsername(name)
-                .password("{bcrypt}$2a$10$UaASZX590cBjyXzmHZnIUe76YyJNfswjpQmzstmgV0QpZXJ6a4QV2")
+                .password(encode)
                 .roles(new String[]{"admin"})
                 .build();
     }

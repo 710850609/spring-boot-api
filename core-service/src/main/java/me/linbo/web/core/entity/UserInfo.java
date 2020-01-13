@@ -1,6 +1,7 @@
 package me.linbo.web.core.entity;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
  * @date 2019-12-17 15:10
  */
 @Data
+@ToString
 public class UserInfo implements Serializable {
 
     /** 用户id */

@@ -1,18 +1,8 @@
 package me.linbo.web.security.config;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import me.linbo.web.security.bll.JwtAuthenticationFilter;
-import me.linbo.web.security.bll.JwtAuthorizationFilter;
-import me.linbo.web.security.bll.UserDetailBiz;
-import me.linbo.web.security.bll.WebSecurityInterceptor;
-import me.linbo.web.security.service.param.LoginParam;
-import me.linbo.web.user.model.User;
+import me.linbo.web.security.bll.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,12 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.context.request.RequestContextHolder;
-
-import javax.servlet.http.HttpServletRequest;
-import java.awt.*;
 
 /**
  * @author LinBo
@@ -39,45 +25,32 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailBiz userDetailBiz;
 
     @Autowired
-    private WebSecurityInterceptor webSecurityInterceptor;
-
-//    @Autowired
-//    private NamePasswordJsonAuthenticationFilter namePasswordJsonAuthenticationFilter;
+    private JwtBiz jwtBiz;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests().antMatchers("/css/***", "/js/***", "/fonts/***").permitAll()
+                // 登录接口、错误接口允许访问
                 .and().authorizeRequests().antMatchers("/login", "/error").permitAll()
                 .anyRequest().authenticated();
-//        http.formLogin().usernameParameter("name").passwordParameter("password");
-        http.addFilter(new JwtAuthenticationFilter(super.authenticationManager()));
-        http.addFilter(new JwtAuthorizationFilter(super.authenticationManager()));
+        // 不采用spring security默认的认证过滤器 {@link org.springframework.security.config.annotation.web.builders.FilterComparator}
+        // 多种登录方式
+        // 替换默认用户名密码登录拦截器
+        // 账号密码登录
+        http.addFilterAt(new NamePasswordAuthenticationFilter(super.authenticationManager()), UsernamePasswordAuthenticationFilter.class);
+        // 手机+验证码登录
+        http.addFilterAfter(new PhoneVerificationCodeAuthenticationFilter("/phoneLogin"), NamePasswordAuthenticationFilter.class);
+        // token验证
+        http.addFilterBefore(new BearerTokenAuthenticationFilter(), PhoneVerificationCodeAuthenticationFilter.class);
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailBiz)
-            .passwordEncoder(passwordEncoder());
-//
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(userDetailBiz);
-//        authProvider.setPasswordEncoder(passwordEncoder());
-//        auth.authenticationProvider(authProvider);
+//        auth.userDetailsService(userDetailBiz)
+//            .passwordEncoder(passwordEncoder());
+//        auth.authenticationProvider(new JwtAuthenticationProvider(jwtBiz));
     }
-
-//    @Override
-//    public void setTrustResolver(AuthenticationTrustResolver trustResolver) {
-//        super.setTrustResolver(trustResolver);
-//    }
-
-//    @Bean
-//    @Override
-//    protected AuthenticationManager authenticationManager() throws Exception {
-//        return super.authenticationManager();
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
