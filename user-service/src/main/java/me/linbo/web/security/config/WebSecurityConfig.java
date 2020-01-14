@@ -1,8 +1,16 @@
 package me.linbo.web.security.config;
-import me.linbo.web.security.bll.*;
+
+import me.linbo.web.security.auth.JwtBiz;
+import me.linbo.web.security.auth.provider.MobileCodeAuthenticationProvider;
+import me.linbo.web.security.auth.provider.UserDetailBiz;
+import me.linbo.web.security.filter.BearerTokenAuthenticationFilter;
+import me.linbo.web.security.filter.MobileCodeAuthenticationFilter;
+import me.linbo.web.security.filter.NamePasswordAuthenticationFilter;
+import me.linbo.web.user.bll.UserBiz;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -10,8 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 /**
  * @author LinBo
@@ -25,6 +33,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailBiz userDetailBiz;
 
     @Autowired
+    private UserBiz userBiz;
+
+    @Autowired
     private JwtBiz jwtBiz;
 
     @Override
@@ -36,20 +47,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated();
         // 不采用spring security默认的认证过滤器 {@link org.springframework.security.config.annotation.web.builders.FilterComparator}
         // 多种登录方式
-        // 替换默认用户名密码登录拦截器
-        // 账号密码登录
-        http.addFilterAt(new NamePasswordAuthenticationFilter(super.authenticationManager()), UsernamePasswordAuthenticationFilter.class);
-        // 手机+验证码登录
-        http.addFilterAfter(new PhoneVerificationCodeAuthenticationFilter("/phoneLogin"), NamePasswordAuthenticationFilter.class);
-        // token验证
-        http.addFilterBefore(new BearerTokenAuthenticationFilter(), PhoneVerificationCodeAuthenticationFilter.class);
+        // 替换默认用户名密码认证拦截器
+        // 解决乱码问题
+        http.addFilterBefore(new CharacterEncodingFilter("UTF-8", true), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(new NamePasswordAuthenticationFilter(jwtBiz, super.authenticationManager()), UsernamePasswordAuthenticationFilter.class);
+        // 手机+验证码认证
+        http.addFilterAfter(new MobileCodeAuthenticationFilter("/phoneLogin", super.authenticationManager()), NamePasswordAuthenticationFilter.class);
+        // token认证
+        http.addFilterAfter(new BearerTokenAuthenticationFilter(jwtBiz), MobileCodeAuthenticationFilter.class);
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userDetailBiz)
-//            .passwordEncoder(passwordEncoder());
-//        auth.authenticationProvider(new JwtAuthenticationProvider(jwtBiz));
+        // 这里不采用下面 auth.authenticationProvider 的方式编写，是为了提供常用用户名密码登录快捷写法demo
+        DaoAuthenticationProvider usernamePassowrdAuthenticationProvider = new DaoAuthenticationProvider();
+        usernamePassowrdAuthenticationProvider.setUserDetailsService(userDetailBiz);
+        usernamePassowrdAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+
+        auth.authenticationProvider(usernamePassowrdAuthenticationProvider);
+        auth.authenticationProvider(new MobileCodeAuthenticationProvider(userBiz));
     }
 
     @Bean

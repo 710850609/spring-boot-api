@@ -1,4 +1,4 @@
-package me.linbo.web.security.model;
+package me.linbo.web.user.model;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 角色表
+ * 用户-角色关联表
  * </p>
  *
  * @author LinBo
@@ -17,17 +17,22 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("role")
-public class Role implements Serializable {
+@TableName("user_role")
+public class UserRole implements Serializable {
 
     private static final long serialVersionUID=1L;
 
     private Integer id;
 
     /**
-     * 角色名称
+     * 用户id
      */
-    private String name;
+    private Integer userId;
+
+    /**
+     * 角色id
+     */
+    private Integer roleId;
 
 
 }

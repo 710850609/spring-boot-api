@@ -1,4 +1,4 @@
-package me.linbo.web.security.model;
+package me.linbo.web.user.model;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;

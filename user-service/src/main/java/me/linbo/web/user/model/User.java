@@ -49,7 +49,7 @@ public class User implements Serializable {
     /**
      * 手机号码
      */
-    private Integer phoneNo;
+    private String mobile;
 
     /**
      * 头像

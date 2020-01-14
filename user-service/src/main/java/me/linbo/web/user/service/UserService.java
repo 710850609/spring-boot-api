@@ -1,5 +1,6 @@
 package me.linbo.web.user.service;
 
+import lombok.extern.slf4j.Slf4j;
 import me.linbo.web.core.entity.PageResult;
 import me.linbo.web.core.entity.Response;
 import me.linbo.web.core.entity.UserInfo;
@@ -8,6 +9,8 @@ import me.linbo.web.user.model.User;
 import me.linbo.web.user.service.params.UserQueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -29,6 +33,8 @@ public class UserService {
      **/
     @GetMapping(path = "")
     public Response<PageResult<User>> page(UserQueryParams param) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("authentication: [{}]", authentication);
         PageResult<User> result = userBiz.page(param);
         return Response.ok(result);
     }

@@ -11,7 +11,7 @@
  Target Server Version : 50718
  File Encoding         : 65001
 
- Date: 14/01/2020 18:02:38
+ Date: 14/01/2020 18:02:58
 */
 
 SET NAMES utf8mb4;
@@ -34,6 +34,12 @@ CREATE TABLE `resource`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '服务资源表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Records of resource
+-- ----------------------------
+INSERT INTO `resource` VALUES (1, '2', '查询用户', 'GET /users', NULL, NULL, NULL, NULL);
+INSERT INTO `resource` VALUES (2, '2', '新增用户', 'POST /users', NULL, NULL, NULL, NULL);
+
+-- ----------------------------
 -- Table structure for role
 -- ----------------------------
 DROP TABLE IF EXISTS `role`;
@@ -42,6 +48,11 @@ CREATE TABLE `role`  (
   `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '角色名称',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of role
+-- ----------------------------
+INSERT INTO `role` VALUES (1, 'admin');
 
 -- ----------------------------
 -- Table structure for role_resource
@@ -53,6 +64,12 @@ CREATE TABLE `role_resource`  (
   `resource_id` int(11) NULL DEFAULT NULL COMMENT '资源id',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-资源关联表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of role_resource
+-- ----------------------------
+INSERT INTO `role_resource` VALUES (1, 1, 1);
+INSERT INTO `role_resource` VALUES (2, 1, 2);
 
 -- ----------------------------
 -- Table structure for user
@@ -79,6 +96,12 @@ CREATE TABLE `user`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Records of user
+-- ----------------------------
+INSERT INTO `user` VALUES (1214089386833088514, '123', '{bcrypt}$2a$10$e.gejIQIIfUv0TpvzXbY9OgQ6Ivg3Qgw8dNq.yCvxWdp9Ed.8EkGG', NULL, NULL, NULL, NULL, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `user` VALUES (1214089675761913857, NULL, '{bcrypt}$2a$10$e.gejIQIIfUv0TpvzXbY9OgQ6Ivg3Qgw8dNq.yCvxWdp9Ed.8EkGG', NULL, NULL, NULL, '15888888888', 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+-- ----------------------------
 -- Table structure for user_role
 -- ----------------------------
 DROP TABLE IF EXISTS `user_role`;
@@ -88,5 +111,10 @@ CREATE TABLE `user_role`  (
   `role_id` int(11) NULL DEFAULT NULL COMMENT '角色id',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户-角色关联表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of user_role
+-- ----------------------------
+INSERT INTO `user_role` VALUES (1, 1214089386833088514, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;

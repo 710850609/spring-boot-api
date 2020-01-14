@@ -1,9 +1,9 @@
-package me.linbo.web.security.bll;
+package me.linbo.web.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import me.linbo.web.security.auth.JwtBiz;
 import me.linbo.web.security.service.param.NamePasswordLoginParam;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,7 +13,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,27 +28,28 @@ import java.io.IOException;
 @Slf4j
 public class NamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    public NamePasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
+    private JwtBiz jwtBiz;
+
+    public NamePasswordAuthenticationFilter(JwtBiz jwtBiz, AuthenticationManager authenticationManager) {
         super.setAuthenticationManager(authenticationManager);
+        this.jwtBiz = jwtBiz;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.info("账号密码登录...");
+        log.info("账号密码认证...");
         NamePasswordLoginParam loginParam = getLoginParam(request);
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
                 loginParam.getName(), loginParam.getPassword());
-        // Allow subclasses to set the "details" property
-        setDetails(request, authRequest);
-
         return this.getAuthenticationManager().authenticate(authRequest);
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        // 认证成功，输出token
         UserDetails userDetails = (UserDetails) authResult.getPrincipal();
-        System.out.println("认证成功: " + userDetails);
-        String token = JwtBiz.create(userDetails);
+        log.info("账号密码认证成功: [{}]", userDetails);
+        String token = jwtBiz.create(userDetails);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write("{\"token\":\"" + token + "\"}");
         SecurityContextHolder.getContext().setAuthentication(authResult);
@@ -59,23 +59,18 @@ public class NamePasswordAuthenticationFilter extends UsernamePasswordAuthentica
         }
     }
 
+    /**
+     * 获取登录参数，这里只支持json格式数据
+     * @Author LinBo
+     * @param request
+     * @return {@link NamePasswordLoginParam}
+     **/
     private NamePasswordLoginParam getLoginParam(HttpServletRequest request) {
-        NamePasswordLoginParam loginParam = (NamePasswordLoginParam) request.getAttribute("loginParam");
-        if (loginParam == null) {
-            String contentType = request.getContentType();
-            MediaType mediaType =  MediaType.parseMediaType(contentType);
-            if (MediaType.APPLICATION_JSON.equals(mediaType)
-                    || MediaType.APPLICATION_JSON_UTF8.equals(mediaType)) {
-                try {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    loginParam = objectMapper.readValue(request.getInputStream(), NamePasswordLoginParam.class);
-                } catch (Exception e) {}
-            } else {
-                loginParam = new NamePasswordLoginParam();
-                loginParam.setName(super.obtainUsername(request));
-                loginParam.setPassword(super.obtainPassword(request));
-            }
-        }
+        NamePasswordLoginParam loginParam = new NamePasswordLoginParam();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            loginParam = objectMapper.readValue(request.getInputStream(), NamePasswordLoginParam.class);
+        } catch (Exception e) {}
         return loginParam;
     }
 

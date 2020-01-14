@@ -1,6 +1,6 @@
-package me.linbo.web.security.mapper;
+package me.linbo.web.user.mapper;
 
-import me.linbo.web.security.model.Role;
+import me.linbo.web.user.model.Role;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

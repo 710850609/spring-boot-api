@@ -6,9 +6,9 @@ import me.linbo.web.core.execption.SystemException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,7 +29,7 @@ public class ErrorService implements ErrorController {
         return errorPath;
     }
 
-    @RequestMapping
+    @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<String> error(HttpServletRequest request, Throwable t) {
         HttpStatus status = getStatus(request);
         switch (status) {
@@ -37,6 +37,8 @@ public class ErrorService implements ErrorController {
                 return Response.error(SystemException.SERVICE_NOT_FOUND);
             case FORBIDDEN:
                 return Response.error(SystemException.FORBIDDEN);
+            case UNAUTHORIZED:
+                return Response.error(SystemException.UNAUTHORIZED);
             default:
                 return Response.error(SystemException.SYSTEM_ERROR);
         }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.linbo.web.user.mapper.ResourceMapper">
+
+    <sql id="BaseColumn">
+        id, type, name, uri, parent_id, sort_no, level, create_time
+    </sql>
+
+    <select id="listByUserId" resultType="me.linbo.web.user.model.Resource">
+        select re.id, re.type, re.name, re.uri, re.parent_id as parentId, re.sort_no sortNo, re.level, re.create_time as createTime
+        from resource re, role_resource rr, user_role ur
+        where
+            rr.resource_id = re.id
+            and rr.role_id = ur.role_id
+            and ur.user_id = #{id}
+    </select>
+</mapper>

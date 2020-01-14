@@ -1,10 +1,10 @@
-package me.linbo.web.security.bll;
+package me.linbo.web.security.filter;
 
 import lombok.extern.slf4j.Slf4j;
+import me.linbo.web.security.auth.JwtBiz;
+import me.linbo.web.security.service.param.JwtAuthentication;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -14,26 +14,33 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * JWT鉴权过滤
+ * Bearer Token认证过滤器
  * @author LinBo
  * @date 2020-01-09 17:38
  */
 @Slf4j
 public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
 
+    private JwtBiz jwtBiz;
+
+    public BearerTokenAuthenticationFilter(JwtBiz jwtBiz) {
+        this.jwtBiz = jwtBiz;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+        log.info("JWT认证...");
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         String token = getJwtToken(header);
         if (token == null) {
             chain.doFilter(request, response);
             return;
         }
-        log.info("JWT Token: [{}]", token);
-        UserDetails userInfo = JwtBiz.parse(token);
-        log.info("解析Jwt Token得到用户信息: [{}]", userInfo);
+        log.info("解析得到token: [{}]", token);
+        JwtAuthentication authentication = jwtBiz.parse(token);
+        // TODO 鉴权uri
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        chain.doFilter(request, response);
     }
 
     private String getJwtToken(String header) {
@@ -45,7 +52,7 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
         if (index != 0) {
             return null;
         }
-        return header.substring(index);
+        return header.substring(7);
     }
 
 }
