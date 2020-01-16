@@ -1,8 +1,10 @@
 package me.linbo.web.security.service.param;
 
+import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -10,21 +12,23 @@ import java.util.List;
  * @author LinBo
  * @date 2020-01-14 14:02
  */
+@Getter
 public class JwtAuthentication extends AbstractAuthenticationToken {
 
     private String id;
 
-    private String token;
+    private Date expiration;
 
-    /**
-     * Creates a token with the supplied array of authorities.
-     *
-     * @param authorities the collection of <tt>GrantedAuthority</tt>s for the principal
-     *                    represented by this authentication object.
-     */
-    public JwtAuthentication(String id, List<HttpResourceAuthority> authorities) {
+    private Date notBefore;
+
+    private String userName;
+
+    public JwtAuthentication(String id, String userName, Date expiration, Date notBefore, List<HttpResourceAuthority> authorities) {
         super(authorities);
         this.id = id;
+        this.userName = userName;
+        this.expiration = expiration;
+        this.notBefore = notBefore;
     }
 
     public void setId(String id) {
@@ -32,7 +36,7 @@ public class JwtAuthentication extends AbstractAuthenticationToken {
     }
 
     @Override
-    public Object getCredentials() {
+    public List<HttpResourceAuthority> getCredentials() {
         return null;
     }
 

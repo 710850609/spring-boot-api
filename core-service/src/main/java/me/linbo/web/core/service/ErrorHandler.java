@@ -4,6 +4,7 @@ package me.linbo.web.core.service;
 import lombok.extern.slf4j.Slf4j;
 import me.linbo.web.core.entity.Response;
 import me.linbo.web.core.execption.BizException;
+import me.linbo.web.core.execption.SystemException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 @ResponseBody
 public class ErrorHandler {
 
-    @ExceptionHandler({BizException.class})
+    @ExceptionHandler({SystemException.class})
     public Response<String> bizExceptionHandler(BizException e) {
         return Response.error(e);
     }

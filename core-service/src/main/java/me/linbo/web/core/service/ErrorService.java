@@ -2,13 +2,17 @@ package me.linbo.web.core.service;
 
 import lombok.extern.slf4j.Slf4j;
 import me.linbo.web.core.entity.Response;
+import me.linbo.web.core.execption.BizException;
 import me.linbo.web.core.execption.SystemException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,10 +23,18 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 @RestController
 @RequestMapping("${server.error.path:${error.path:/error}}")
-public class ErrorService implements ErrorController {
+public class ErrorService extends AbstractErrorController {
 
     @Value("${server.error.path:${error.path:/error}}")
     private String errorPath;
+    
+    @Autowired
+    private ErrorAttributes errorAttributes;
+
+    public ErrorService(ErrorAttributes errorAttributes) {
+        super(errorAttributes);
+        this.errorAttributes = errorAttributes;
+    }
 
     @Override
     public String getErrorPath() {
@@ -30,8 +42,13 @@ public class ErrorService implements ErrorController {
     }
 
     @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<String> error(HttpServletRequest request, Throwable t) {
+    public Response<String> error(HttpServletRequest request) {
+        Throwable error = errorAttributes.getError(new ServletWebRequest(request));
+        if (error != null && BizException.class.isAssignableFrom(error.getClass())) {
+            return Response.error((BizException) error);
+        }
         HttpStatus status = getStatus(request);
+        log.error("错误", error);
         switch (status) {
             case NOT_FOUND:
                 return Response.error(SystemException.SERVICE_NOT_FOUND);
@@ -44,16 +61,4 @@ public class ErrorService implements ErrorController {
         }
     }
 
-    protected HttpStatus getStatus(HttpServletRequest request) {
-        Integer statusCode = (Integer)request.getAttribute("javax.servlet.error.status_code");
-        if (statusCode == null) {
-            return HttpStatus.INTERNAL_SERVER_ERROR;
-        } else {
-            try {
-                return HttpStatus.valueOf(statusCode);
-            } catch (Exception var4) {
-                return HttpStatus.INTERNAL_SERVER_ERROR;
-            }
-        }
-    }
 }

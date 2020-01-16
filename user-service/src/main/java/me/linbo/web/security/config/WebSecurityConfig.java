@@ -6,6 +6,7 @@ import me.linbo.web.security.auth.provider.UserDetailBiz;
 import me.linbo.web.security.filter.BearerTokenAuthenticationFilter;
 import me.linbo.web.security.filter.MobileCodeAuthenticationFilter;
 import me.linbo.web.security.filter.NamePasswordAuthenticationFilter;
+import me.linbo.web.security.filter.RefreshTokenAuthenticationFilter;
 import me.linbo.web.user.bll.UserBiz;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -53,6 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterAfter(new NamePasswordAuthenticationFilter(jwtBiz, super.authenticationManager()), UsernamePasswordAuthenticationFilter.class);
         // token认证
         http.addFilterAfter(new BearerTokenAuthenticationFilter(jwtBiz), MobileCodeAuthenticationFilter.class);
+        // 刷新token
+        http.addFilterAfter(new RefreshTokenAuthenticationFilter("/refreshToken", jwtBiz), BearerTokenAuthenticationFilter.class);
     }
 
     @Override

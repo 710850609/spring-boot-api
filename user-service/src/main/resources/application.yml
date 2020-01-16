@@ -24,6 +24,7 @@ spring:
       write-dates-as-timestamps: true
     date-format: y
   http:
+    converters:
     encoding:
       charset: UTF-8
       force: true

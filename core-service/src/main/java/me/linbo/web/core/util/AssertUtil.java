@@ -14,4 +14,16 @@ public class AssertUtil {
             throw e;
         }
     }
+
+    public static void mustTrue(boolean judge, BizException exception) throws BizException {
+        if (judge) {
+            throw exception;
+        }
+    }
+
+    public static void notBlank(String str, BizException e) throws BizException {
+        if (str == null || "".equals(str.trim())) {
+            throw e;
+        }
+    }
 }

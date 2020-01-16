@@ -7,8 +7,8 @@ import java.text.MessageFormat;
 /**
  * 业务异常
  * <p>
- *     异常编码定义： 3位子系统编码，3位模块编码，4位业务编码
- *              如:  001 001 0001
+ *     异常编码定义： 3位模块编码，4位业务编码
+ *              如:  001 0001
  * </p>
  * @author LinBo
  * @date 2019-11-26 16:02
@@ -16,12 +16,17 @@ import java.text.MessageFormat;
 @Getter
 public class BizException extends RuntimeException {
 
+    public static final String SYSTEM_MODULE_CODE = "000";
+    public static final String BASE_MODULE_CODE = "001";
+    public static final String USER_MODULE_CODE = "002";
+    public static final String SECURITY_MODULE_CODE = "003";
+
     private String code;
 
     private String message;
 
-    protected BizException(String code, String message) {
-        this.code = code;
+    protected BizException(String moduleCode, String bizCode, String message) {
+        this.code = moduleCode + bizCode;
         this.message = message;
     }
 
@@ -36,8 +41,8 @@ public class BizException extends RuntimeException {
     }
 
     /** 参数为空 */
-    public static final BizException COMMON_PARAMS_NOT_NULL = new BizException("0000010001", "参数为空: {0}");
+    public static final BizException COMMON_PARAMS_NOT_NULL = new BizException(BASE_MODULE_CODE, "0001", "参数为空: {0}");
     /** 参数非法 */
-    public static final BizException COMMON_PARAMS_ILLEGAL = new BizException("0000010002", "参数非法: {0}");
+    public static final BizException COMMON_PARAMS_ILLEGAL = new BizException(BASE_MODULE_CODE, "0002", "参数非法: {0}");
 
 }

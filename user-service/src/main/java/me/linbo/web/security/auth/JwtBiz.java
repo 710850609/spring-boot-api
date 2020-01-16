@@ -1,13 +1,16 @@
 package me.linbo.web.security.auth;
 
 import cn.hutool.core.bean.BeanUtil;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
+import me.linbo.web.core.execption.SystemException;
+import me.linbo.web.security.exception.WebSecurityException;
 import me.linbo.web.security.service.param.HttpResourceAuthority;
 import me.linbo.web.security.service.param.JwtAuthentication;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -22,6 +25,7 @@ import java.util.*;
  * @date 2020-01-13 14:28
  */
 @Component
+@Slf4j
 public class JwtBiz {
 
     @Value("${me.linbo.web.security-key}")
@@ -40,14 +44,22 @@ public class JwtBiz {
     }
 
     public String create(UserDetails userInfo) {
-        Date expiration = new Date(System.currentTimeMillis() + expirationTime);
+        return create(userInfo.getUsername(), userInfo.getAuthorities(), expirationTime);
+    }
+
+    public String createForRefresh(UserDetails userDetails) {
+        return create(userDetails.getUsername(), userDetails.getAuthorities(), expirationTime * 2);
+    }
+
+    private String create(String userName, Collection<? extends GrantedAuthority> authorities, Long expiration) {
+        Date expirationDate = new Date(System.currentTimeMillis() + expiration);
         Map<String, Object> claims = new HashMap<>(1);
-        claims.put("userName", userInfo.getUsername());
-        claims.put("password", userInfo.getPassword());
-        claims.put("authorities", userInfo.getAuthorities());
+        claims.put("userName", userName);
+        claims.put("authorities", authorities);
         String jws = Jwts.builder()
                 .addClaims(claims)
-                .setExpiration(expiration)
+                .setExpiration(expirationDate)
+                .setNotBefore(null)
                 .signWith(key)
                 // 这里生成唯一id，如果需要模拟session，做到唯一终端登录，可以根据此属性，进行限制判断
                 .setId(UUID.randomUUID().toString().replace("-", ""))
@@ -56,17 +68,29 @@ public class JwtBiz {
     }
 
     public JwtAuthentication parse(String token) {
-        Jws<Claims> jws = Jwts.parser()
-                .setSigningKey(key)
-                .parseClaimsJws(token);
-        List<HttpResourceAuthority> authorityList = new ArrayList<>();
-        jws.getBody().get("authorities", List.class).forEach(v -> {
-            HttpResourceAuthority resourceAuthority = new HttpResourceAuthority();
-            BeanUtil.fillBeanWithMap((Map<?, ?>) v, resourceAuthority, true);
-            authorityList.add(resourceAuthority);
-        });
-        JwtAuthentication authentication = new JwtAuthentication(jws.getBody().getId(), authorityList);
-        return authentication;
+        try {
+            Jws<Claims> jws = Jwts.parser()
+                    .setSigningKey(key)
+                    .parseClaimsJws(token);
+            List<HttpResourceAuthority> authorityList = new ArrayList<>();
+            jws.getBody().get("authorities", List.class).forEach(v -> {
+                HttpResourceAuthority resourceAuthority = new HttpResourceAuthority();
+                BeanUtil.fillBeanWithMap((Map<?, ?>) v, resourceAuthority, true);
+                authorityList.add(resourceAuthority);
+            });
+            String id = jws.getBody().getId();
+            Date expiration = jws.getBody().getExpiration();
+            Date notBefore = jws.getBody().getNotBefore();
+            String userName = jws.getBody().get("userName", String.class);
+            JwtAuthentication authentication = new JwtAuthentication(id, userName, expiration, notBefore, authorityList);
+            return authentication;
+        } catch (ExpiredJwtException e1) {
+            log.warn("token已失效", e1);
+            throw WebSecurityException.TOKEN_EXPIRED;
+        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException e2) {
+            log.warn("token格式错误", e2);
+            throw WebSecurityException.TOKEN_ERROR;
+        }
     }
 
 }

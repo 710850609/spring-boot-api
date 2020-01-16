@@ -34,10 +34,10 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        log.info("JWT认证...");
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         String token = getJwtToken(header);
         if (token != null) {
+            log.info("JWT Token认证...");
             log.info("解析得到token: [{}]", token);
             JwtAuthentication authentication = jwtBiz.parse(token);
             Collection<GrantedAuthority> authorityList = authentication.getAuthorities();

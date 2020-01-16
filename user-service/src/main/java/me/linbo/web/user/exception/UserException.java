@@ -14,9 +14,9 @@ import me.linbo.web.core.execption.BizException;
  */
 public class UserException extends BizException {
 
-    public static final BizException USER_NOT_EXISTS = new UserException("0010010001", "用户不存在");
+    public static final BizException USER_NOT_EXISTS = new UserException("0001", "用户不存在");
 
     public UserException(String code, String message) {
-        super(code, message);
+        super(USER_MODULE_CODE, code, message);
     }
 }
