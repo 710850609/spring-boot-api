@@ -1,18 +1,20 @@
 package me.linbo.web.security.auth;
 
+import cn.hutool.core.bean.BeanUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import me.linbo.web.security.service.param.HttpResourceAuthority;
 import me.linbo.web.security.service.param.JwtAuthentication;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
+import javax.annotation.PostConstruct;
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * jwt 生成、解析工具
@@ -22,10 +24,23 @@ import java.util.Map;
 @Component
 public class JwtBiz {
 
-    private Key key = Keys.hmacShaKeyFor("9KZobY7maVd1lkiPyNh8TzrWMOQSUgCD0FBxtqX62AnGs35fLeEHIpc4jRvJuwLv41tWbrlfUCjP1fmkx1FLOnqjpdTRJEkhd6DmA1LsG5IFoHMyRSIAntHpKCMcZV35".getBytes());
+    @Value("${me.linbo.web.security-key}")
+    private String securityKey;
+
+    @Value("#{${me.linbo.web.expiration-time}}")
+    private Long expirationTime;
+
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        Assert.hasText(securityKey, "配置[me.linbo.web.security-key]为空");
+        Assert.notNull(expirationTime, "配置[me.linbo.web.expiration-time]为空");
+        this.key = Keys.hmacShaKeyFor(securityKey.getBytes());
+    }
 
     public String create(UserDetails userInfo) {
-        Date expiration = new Date(System.currentTimeMillis() + 1000*60*60*24);
+        Date expiration = new Date(System.currentTimeMillis() + expirationTime);
         Map<String, Object> claims = new HashMap<>(1);
         claims.put("userName", userInfo.getUsername());
         claims.put("password", userInfo.getPassword());
@@ -34,6 +49,8 @@ public class JwtBiz {
                 .addClaims(claims)
                 .setExpiration(expiration)
                 .signWith(key)
+                // 这里生成唯一id，如果需要模拟session，做到唯一终端登录，可以根据此属性，进行限制判断
+                .setId(UUID.randomUUID().toString().replace("-", ""))
                 .compact();
         return jws;
     }
@@ -42,14 +59,14 @@ public class JwtBiz {
         Jws<Claims> jws = Jwts.parser()
                 .setSigningKey(key)
                 .parseClaimsJws(token);
-        Claims claims = jws.getBody();
-        JwtAuthentication authentication = new JwtAuthentication(token);
+        List<HttpResourceAuthority> authorityList = new ArrayList<>();
+        jws.getBody().get("authorities", List.class).forEach(v -> {
+            HttpResourceAuthority resourceAuthority = new HttpResourceAuthority();
+            BeanUtil.fillBeanWithMap((Map<?, ?>) v, resourceAuthority, true);
+            authorityList.add(resourceAuthority);
+        });
+        JwtAuthentication authentication = new JwtAuthentication(jws.getBody().getId(), authorityList);
         return authentication;
     }
 
-    public static void main(String[] args) {
-        JwtBiz jwtBiz = new JwtBiz();
-        String s = jwtBiz.create(User.withUsername("123").password("123").authorities("123").build());
-        System.out.println(s);
-    }
 }

@@ -41,6 +41,11 @@ public class Resource implements Serializable {
     private String uri;
 
     /**
+     * 请求方法
+     **/
+    private String method;
+
+    /**
      * 上级id
      */
     private Integer parentId;

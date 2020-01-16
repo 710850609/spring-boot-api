@@ -9,10 +9,10 @@ import org.springframework.security.core.GrantedAuthority;
  * @author LinBo
  * @date 2020-01-14 17:19
  */
-public class ResourceAuthority extends Resource implements GrantedAuthority {
+public class HttpResourceAuthority extends Resource implements GrantedAuthority {
 
-    public static ResourceAuthority build(Resource resource) {
-        ResourceAuthority authority = new ResourceAuthority();
+    public static HttpResourceAuthority build(Resource resource) {
+        HttpResourceAuthority authority = new HttpResourceAuthority();
         BeanUtils.copyProperties(resource, authority);
         return authority;
     }

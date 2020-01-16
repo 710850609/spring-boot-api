@@ -10,7 +10,6 @@ import me.linbo.web.user.bll.UserBiz;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -45,14 +44,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 登录接口、错误接口允许访问
                 .and().authorizeRequests().antMatchers("/login", "/error").permitAll()
                 .anyRequest().authenticated();
-        // 不采用spring security默认的认证过滤器 {@link org.springframework.security.config.annotation.web.builders.FilterComparator}
+        // 不采用spring security默认的认证过滤器链 {@link org.springframework.security.config.annotation.web.builders.FilterComparator}
         // 多种登录方式
         // 替换默认用户名密码认证拦截器
-        // 解决乱码问题
-        http.addFilterBefore(new CharacterEncodingFilter("UTF-8", true), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterAt(new NamePasswordAuthenticationFilter(jwtBiz, super.authenticationManager()), UsernamePasswordAuthenticationFilter.class);
         // 手机+验证码认证
-        http.addFilterAfter(new MobileCodeAuthenticationFilter("/phoneLogin", super.authenticationManager()), NamePasswordAuthenticationFilter.class);
+        http.addFilterAt(new MobileCodeAuthenticationFilter("/phoneLogin", super.authenticationManager()), NamePasswordAuthenticationFilter.class);
+        // 账号密码认证
+        http.addFilterAfter(new NamePasswordAuthenticationFilter(jwtBiz, super.authenticationManager()), UsernamePasswordAuthenticationFilter.class);
         // token认证
         http.addFilterAfter(new BearerTokenAuthenticationFilter(jwtBiz), MobileCodeAuthenticationFilter.class);
     }
@@ -60,11 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         // 这里不采用下面 auth.authenticationProvider 的方式编写，是为了提供常用用户名密码登录快捷写法demo
-        DaoAuthenticationProvider usernamePassowrdAuthenticationProvider = new DaoAuthenticationProvider();
-        usernamePassowrdAuthenticationProvider.setUserDetailsService(userDetailBiz);
-        usernamePassowrdAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-
-        auth.authenticationProvider(usernamePassowrdAuthenticationProvider);
+        auth.userDetailsService(userDetailBiz).passwordEncoder(passwordEncoder());
         auth.authenticationProvider(new MobileCodeAuthenticationProvider(userBiz));
     }
 

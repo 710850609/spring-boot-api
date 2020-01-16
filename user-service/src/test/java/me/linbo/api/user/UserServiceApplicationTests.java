@@ -1,6 +1,6 @@
 package me.linbo.api.user;
 
-import me.linbo.web.user.UserServiceApplication;
+import me.linbo.web.UserServiceApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

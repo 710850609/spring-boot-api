@@ -2,9 +2,12 @@ package me.linbo.web.security.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import me.linbo.web.security.auth.JwtBiz;
+import me.linbo.web.security.service.param.HttpResourceAuthority;
 import me.linbo.web.security.service.param.JwtAuthentication;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -12,6 +15,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Bearer Token认证过滤器
@@ -32,14 +37,17 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
         log.info("JWT认证...");
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         String token = getJwtToken(header);
-        if (token == null) {
-            chain.doFilter(request, response);
-            return;
+        if (token != null) {
+            log.info("解析得到token: [{}]", token);
+            JwtAuthentication authentication = jwtBiz.parse(token);
+            Collection<GrantedAuthority> authorityList = authentication.getAuthorities();
+            Optional<GrantedAuthority> first = authorityList.stream().filter(auth -> {
+                HttpResourceAuthority ra = (HttpResourceAuthority) auth;
+                return new AntPathRequestMatcher(ra.getUri(), ra.getMethod()).matches(request);
+            }).findFirst();
+            authentication.setAuthenticated(first.isPresent());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        log.info("解析得到token: [{}]", token);
-        JwtAuthentication authentication = jwtBiz.parse(token);
-        // TODO 鉴权uri
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(request, response);
     }
 

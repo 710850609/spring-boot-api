@@ -1,6 +1,6 @@
 package me.linbo.web.security.auth.provider;
 
-import me.linbo.web.security.service.param.ResourceAuthority;
+import me.linbo.web.security.service.param.HttpResourceAuthority;
 import me.linbo.web.user.bll.ResourceBiz;
 import me.linbo.web.user.bll.UserBiz;
 import me.linbo.web.user.model.Resource;
@@ -35,7 +35,7 @@ public class UserDetailBiz implements UserDetailsService {
             throw new UsernameNotFoundException(name);
         }
         List<Resource> resources = resourceBiz.listByUserId(user.getId());
-        List<ResourceAuthority> collect = resources.stream().map(r -> ResourceAuthority.build(r)).collect(Collectors.toList());
+        List<HttpResourceAuthority> collect = resources.stream().map(r -> HttpResourceAuthority.build(r)).collect(Collectors.toList());
 
         return org.springframework.security.core.userdetails.User.withUsername(user.getLoginName())
                 .password(user.getPassword())
