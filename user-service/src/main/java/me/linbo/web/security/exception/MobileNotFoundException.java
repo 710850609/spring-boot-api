@@ -3,6 +3,7 @@ package me.linbo.web.security.exception;
 import org.springframework.security.core.AuthenticationException;
 
 /**
+ * 手机号不存在异常
  * @author LinBo
  * @date 2020-01-14 16:09
  */

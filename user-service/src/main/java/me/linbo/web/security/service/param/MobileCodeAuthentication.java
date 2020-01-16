@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 /**
+ * 手机验证码认证对象
  * @author LinBo
  * @date 2020-01-13 17:27
  */

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 查询用户信息、角色、权限
+ * 用户名认证
  * @author LinBo
  * @date 2020-01-06 16:02
  */

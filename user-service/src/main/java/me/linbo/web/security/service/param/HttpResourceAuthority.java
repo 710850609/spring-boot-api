@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 
 /**
+ * Http资源认证对象
  * @author LinBo
  * @date 2020-01-14 17:19
  */

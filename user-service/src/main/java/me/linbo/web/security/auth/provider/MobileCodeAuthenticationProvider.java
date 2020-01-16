@@ -1,6 +1,5 @@
 package me.linbo.web.security.auth.provider;
 
-import me.linbo.web.security.auth.JwtBiz;
 import me.linbo.web.security.exception.MobileNotFoundException;
 import me.linbo.web.security.service.param.MobileCodeAuthentication;
 import me.linbo.web.security.service.param.RequestAuthentication;
@@ -12,6 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.Assert;
 
 /**
+ * 手机验证码认证逻辑
  * @author LinBo
  * @date 2020-01-14 13:36
  */
