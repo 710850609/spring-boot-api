@@ -5,7 +5,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
-import me.linbo.web.core.execption.SystemException;
 import me.linbo.web.security.exception.WebSecurityException;
 import me.linbo.web.security.service.param.HttpResourceAuthority;
 import me.linbo.web.security.service.param.JwtAuthentication;
