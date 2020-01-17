@@ -81,7 +81,7 @@ public class JwtBiz {
             Date expiration = jws.getBody().getExpiration();
             Date notBefore = jws.getBody().getNotBefore();
             String userName = jws.getBody().get("userName", String.class);
-            JwtAuthentication authentication = new JwtAuthentication(id, userName, expiration, notBefore, authorityList);
+            JwtAuthentication authentication = new JwtAuthentication(token, userName, authorityList);
             return authentication;
         } catch (ExpiredJwtException e1) {
             log.warn("token已失效", e1);

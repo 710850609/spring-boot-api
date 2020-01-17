@@ -1,6 +1,7 @@
 package me.linbo.web.security.config;
 
 import me.linbo.web.security.auth.JwtBiz;
+import me.linbo.web.security.auth.provider.BearerTokenAuthenticationProvider;
 import me.linbo.web.security.auth.provider.MobileCodeAuthenticationProvider;
 import me.linbo.web.security.auth.provider.UserDetailBiz;
 import me.linbo.web.security.filter.BearerTokenAuthenticationFilter;
@@ -18,7 +19,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -53,10 +53,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterAt(new MobileCodeAuthenticationFilter("/phoneLogin", super.authenticationManager()), NamePasswordAuthenticationFilter.class);
         // 账号密码认证
         http.addFilterAfter(new NamePasswordAuthenticationFilter(jwtBiz, super.authenticationManager()), UsernamePasswordAuthenticationFilter.class);
-        // token认证
-        http.addFilterAfter(new BearerTokenAuthenticationFilter(jwtBiz), MobileCodeAuthenticationFilter.class);
         // 刷新token
-        http.addFilterAfter(new RefreshTokenAuthenticationFilter("/refreshToken", jwtBiz), BearerTokenAuthenticationFilter.class);
+        http.addFilterAfter(new RefreshTokenAuthenticationFilter("/refreshToken", jwtBiz, userDetailBiz, super.authenticationManager()), NamePasswordAuthenticationFilter.class);
+        // token认证
+        http.addFilterAfter(new BearerTokenAuthenticationFilter(jwtBiz, super.authenticationManager()), RefreshTokenAuthenticationFilter.class);
     }
 
     @Override
@@ -64,6 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 这里不采用下面 auth.authenticationProvider 的方式编写，是为了提供常用用户名密码登录快捷写法demo
         auth.userDetailsService(userDetailBiz).passwordEncoder(passwordEncoder());
         auth.authenticationProvider(new MobileCodeAuthenticationProvider(userBiz));
+        auth.authenticationProvider(new BearerTokenAuthenticationProvider(jwtBiz));
     }
 
     @Bean

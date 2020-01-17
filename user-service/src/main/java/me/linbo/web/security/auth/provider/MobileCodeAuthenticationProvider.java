@@ -38,6 +38,6 @@ public class MobileCodeAuthenticationProvider implements AuthenticationProvider 
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return authentication.isAssignableFrom(MobileCodeAuthentication.class);
+        return MobileCodeAuthentication.class.isAssignableFrom(authentication);
     }
 }

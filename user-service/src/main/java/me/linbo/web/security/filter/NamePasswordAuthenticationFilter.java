@@ -7,10 +7,8 @@ import me.linbo.web.security.service.param.NamePasswordLoginParam;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -52,11 +50,6 @@ public class NamePasswordAuthenticationFilter extends UsernamePasswordAuthentica
         String token = jwtBiz.create(userDetails);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write("{\"token\":\"" + token + "\"}");
-        SecurityContextHolder.getContext().setAuthentication(authResult);
-        if (super.eventPublisher != null) {
-            super.eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(
-                    authResult, this.getClass()));
-        }
     }
 
     /**

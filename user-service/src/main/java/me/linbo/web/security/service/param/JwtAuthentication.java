@@ -2,9 +2,10 @@ package me.linbo.web.security.service.param;
 
 import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -15,20 +16,16 @@ import java.util.List;
 @Getter
 public class JwtAuthentication extends AbstractAuthenticationToken {
 
-    private String id;
-
-    private Date expiration;
-
-    private Date notBefore;
+    private String token;
 
     private String userName;
 
-    public JwtAuthentication(String id, String userName, Date expiration, Date notBefore, List<HttpResourceAuthority> authorities) {
+    private String id;
+
+    public JwtAuthentication(String token, String userName, List<HttpResourceAuthority> authorities) {
         super(authorities);
-        this.id = id;
+        this.token = token;
         this.userName = userName;
-        this.expiration = expiration;
-        this.notBefore = notBefore;
     }
 
     public void setId(String id) {
@@ -36,7 +33,12 @@ public class JwtAuthentication extends AbstractAuthenticationToken {
     }
 
     @Override
-    public List<HttpResourceAuthority> getCredentials() {
+    public Collection<GrantedAuthority> getAuthorities() {
+        return super.getAuthorities();
+    }
+
+    @Override
+    public Object getCredentials() {
         return null;
     }
 

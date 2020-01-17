@@ -5,7 +5,7 @@ me:
   linbo:
     web:
       security-key: 9KZobY7maVd1lkiPyNh8TzrWMOQSUgCD0FBxtqX62AnGs35fLeEHIpc4jRvJuwLv41tWbrlfUCjP1fmkx1FLOnqjpdTRJEkhd6DmA1LsG5IFoHMyRSIAntHpKCMcZV35
-      expiration-time: 60*60*24
+      expiration-time: 1000*60*60*24
 
 
 # DataSource Config
