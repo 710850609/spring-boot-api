@@ -10,7 +10,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -59,4 +62,18 @@ public class BearerTokenAuthenticationFilter extends AbstractAuthenticationProce
         return null;
     }
 
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) req;
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String token = getJwtToken(header);
+        if (token != null) {
+            log.info("解析得到token: [{}]", token);
+            JwtAuthentication authentication = new JwtAuthentication(token, null, null);
+            Authentication authenticate = this.getAuthenticationManager().authenticate(authentication);
+            // 成功验证后需要放入到security上下文，防止 后面 AnonymousAuthenticationFilter 进行默认角色校验而不通过
+            SecurityContextHolder.getContext().setAuthentication(authenticate);
+        }
+        chain.doFilter(req, res);
+    }
 }

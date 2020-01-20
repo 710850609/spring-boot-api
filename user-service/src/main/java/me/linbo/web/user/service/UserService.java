@@ -9,6 +9,7 @@ import me.linbo.web.user.model.User;
 import me.linbo.web.user.service.params.UserQueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -84,9 +85,10 @@ public class UserService {
         return Response.ok();
     }
 
-
-    @GetMapping("/test")
-    public Response<UserInfo> test(UserInfo userInfo) {
+    @GetMapping("/changePassword")
+    @Secured({"linbo"})
+    public Response<UserInfo> changePassword(UserInfo userInfo, String newPassword) {
+        log.info("修改用户密码： {}", newPassword);
         return Response.ok(userInfo);
     }
 
