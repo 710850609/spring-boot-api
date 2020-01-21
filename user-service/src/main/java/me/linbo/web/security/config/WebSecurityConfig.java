@@ -2,7 +2,6 @@ package me.linbo.web.security.config;
 
 import me.linbo.web.security.auth.JwtBiz;
 import me.linbo.web.security.auth.provider.BearerTokenAuthenticationProvider;
-import me.linbo.web.security.auth.provider.BizErrorProcessor;
 import me.linbo.web.security.auth.provider.MobileCodeAuthenticationProvider;
 import me.linbo.web.security.auth.provider.UserDetailBiz;
 import me.linbo.web.security.filter.BearerTokenAuthenticationFilter;
@@ -13,6 +12,7 @@ import me.linbo.web.user.bll.UserBiz;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,7 +30,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -74,5 +74,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder(){
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
 
 }

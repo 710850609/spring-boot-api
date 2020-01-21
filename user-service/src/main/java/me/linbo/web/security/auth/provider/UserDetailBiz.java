@@ -40,6 +40,7 @@ public class UserDetailBiz implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.withUsername(user.getLoginName())
                 .password(user.getPassword())
                 .authorities(collect)
+                .roles("linbo")
                 .build();
     }
 }
