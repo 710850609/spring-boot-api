@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.linbo.web.core.entity.PageResult;
 import me.linbo.web.core.entity.Response;
 import me.linbo.web.core.entity.UserInfo;
+import me.linbo.web.security.filter.Auth;
 import me.linbo.web.user.bll.UserBiz;
 import me.linbo.web.user.model.User;
 import me.linbo.web.user.service.params.UserQueryParams;
@@ -90,6 +91,7 @@ public class UserService {
     @GetMapping("/changePassword")
     @Secured({"linbo"})
     @PreAuthorize("#newPassword == '123'")
+    @Auth
     public Response<UserInfo> changePassword(UserInfo userInfo, @P("newPassword") String newPassword) {
         log.info("修改用户密码： {}", newPassword);
         return Response.ok(userInfo);
